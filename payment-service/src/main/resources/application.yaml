@@ -1,0 +1,38 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: payment-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/payment_db
+    username: postgres
+    password: 123123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  cloud:
+    function:
+      definition: orderPlaced
+    stream:
+      bindings:
+        orderPlaced-in-0:
+          destination: order-topic
+          group: payment-group
+      rabbit:
+        bindings:
+          orderPlaced-in-0:
+            consumer:
+              auto-bind-dlq: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

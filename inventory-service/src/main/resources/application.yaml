@@ -1,0 +1,42 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: inventory-service
+
+  # 1. PostgreSQL Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5433/inventory_db
+    username: postgres
+    password: 123123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # 2. Messaging Configuration (Consumer Side)
+  cloud:
+    function:
+      definition: orderPlaced    # Matches the @Bean method name in your Listener
+    stream:
+      bindings:
+        orderPlaced-in-0:        # "in" because it's receiving data
+          destination: order-topic # MUST match the Order Service destination
+          group: inventory-group   # Ensures persistent message delivery
+      rabbit:
+        bindings:
+          orderPlaced-in-0:
+            consumer:
+              auto-bind-dlq: true
+
+# 3. Service Discovery
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

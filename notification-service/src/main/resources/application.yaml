@@ -1,0 +1,25 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: notification-service
+
+  cloud:
+    function:
+      definition: orderPlaced
+    stream:
+      bindings:
+        orderPlaced-in-0:
+          destination: order-topic
+          group: notification-group # Different group from Inventory!
+      rabbit:
+        bindings:
+          orderPlaced-in-0:
+            consumer:
+              auto-bind-dlq: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
