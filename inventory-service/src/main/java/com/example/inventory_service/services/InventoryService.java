@@ -15,7 +15,7 @@ public class InventoryService {
     private final InventoryRepository repository;
 
     @Transactional
-    public Inventory deductStock(String productId, Integer quantity) { // 2. Changed return type
+    public Inventory deductStock(String productId, Integer quantity) {
         log.info("Attempting to deduct {} from stock for product: {}", quantity, productId);
 
         Inventory inventory = repository.findByProductId(productId)
